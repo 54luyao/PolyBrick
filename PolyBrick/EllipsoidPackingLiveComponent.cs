@@ -114,11 +114,11 @@ namespace PolyBrick.EllipsoidPacking
                 EXISTING_POINTS = new List<Point3d>();
                 if (existingpoints.Count != 0)
                 {
-                    foreach (Point3d point in existingpoints)
+                    for ( int index =0;index< existingpoints.Count;index++)
                     {
-                        if (EGlobals.BOUNDARY.IsPointInside(point, EGlobals.MIN_RADIUS / 20.0, false))
+                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
                         {
-                            EXISTING_POINTS.Add(point);
+                            EXISTING_POINTS.Add(existingpoints[index]);
                         }
                     }
                 }
@@ -148,11 +148,11 @@ namespace PolyBrick.EllipsoidPacking
                 EXISTING_POINTS = new List<Point3d>();
                 if (existingpoints.Count != 0)
                 {
-                    foreach (Point3d point in existingpoints)
+                    for (int index=0; index< existingpoints.Count;index++)
                     {
-                        if (EGlobals.BOUNDARY.IsPointInside(point, EGlobals.MIN_RADIUS / 20.0, false))
+                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
                         {
-                            EXISTING_POINTS.Add(point);
+                            EXISTING_POINTS.Add(existingpoints[index]);
                         }
                     }
                 }
@@ -171,9 +171,9 @@ namespace PolyBrick.EllipsoidPacking
                 if (new_pack.collisions == 0)
                 {
                     last_ellipsoids = new List<EllipsoidGoo>();
-                    foreach (Ellipsoid ellipsoid in new_pack.ellipsoids)
+                    for (int index =0;index< new_pack.ellipsoids.Count;index++)
                     {
-                        last_ellipsoids.Add(new EllipsoidGoo(ellipsoid));
+                        last_ellipsoids.Add(new EllipsoidGoo(new_pack.ellipsoids[index]));
                     }
                     Ellipsoid new_ellipsoid = Ellipsoid.RandomEllipsoid();
                     new_pack.ellipsoids.Add(new_ellipsoid);

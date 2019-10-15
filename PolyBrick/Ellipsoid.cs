@@ -26,13 +26,13 @@ namespace PolyBrick.EllipsoidPacking
 
         public Ellipsoid()
         {
-            //position = new Vector3d(0, 0, 0);
-            //acceleration = new Vector3d(0, 0, 0);
-            //velocity = GlobalRandom.RandomVector();
-            //orientation = new Vector3d(0, 0, 1);
-            //radiusA = EGlobals.MIN_RADIUS;
-            //radiusB = EGlobals.MIN_RADIUS;
-            //radiusC = EGlobals.MAX_RADIUS;
+        //    //position = new Vector3d(0, 0, 0);
+        //    //acceleration = new Vector3d(0, 0, 0);
+        //    //velocity = GlobalRandom.RandomVector();
+        //    //orientation = new Vector3d(0, 0, 1);
+        //    //radiusA = EGlobals.MIN_RADIUS;
+        //    //radiusB = EGlobals.MIN_RADIUS;
+        //    //radiusC = EGlobals.MAX_RADIUS;
         }
 
         public Ellipsoid(double x,double y,double z)
@@ -177,9 +177,9 @@ namespace PolyBrick.EllipsoidPacking
         public static List<EllipsoidGoo> EllipsoidGooList(List<Ellipsoid> ellipsoids)
         {
             List<EllipsoidGoo> ellipsoidGoos = new List<EllipsoidGoo>();
-            foreach (Ellipsoid e in ellipsoids)
+            for ( int i =0; i<ellipsoids.Count;i++)
             {
-                ellipsoidGoos.Add(new EllipsoidGoo(e));
+                ellipsoidGoos.Add(new EllipsoidGoo(ellipsoids[i]));
             }
             return ellipsoidGoos;
         }

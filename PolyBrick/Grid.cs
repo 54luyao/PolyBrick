@@ -14,7 +14,7 @@ namespace PolyBrick.EllipsoidPacking
             public int y_count;
             public int z_count;
             public double cell_size;
-            public LinkedList<Ellipsoid>[,,] cells;
+            public List<Ellipsoid>[,,] cells;
             //public Stress[,,] stresses; //TODO
             public Dictionary<Ellipsoid, int> ellipsoid_index;
 
@@ -24,7 +24,7 @@ namespace PolyBrick.EllipsoidPacking
                 y_count = y;
                 z_count = z;
                 cell_size = size;
-                cells = new LinkedList<Ellipsoid>[x, y, z];
+                cells = new List<Ellipsoid>[x, y, z];
                 ellipsoid_index = new Dictionary<Ellipsoid, int>();
                 for (int i = 0; i < x_count; i++)
                 {
@@ -32,7 +32,7 @@ namespace PolyBrick.EllipsoidPacking
                     {
                         for (int k = 0; k < z_count; k++)
                         {
-                            cells[i, j, k] = new LinkedList<Ellipsoid>();
+                            cells[i, j, k] = new List<Ellipsoid>();
                         }
                     }
                 }
@@ -57,7 +57,7 @@ namespace PolyBrick.EllipsoidPacking
                 int pos_z = (int)Math.Floor((circle.position.Z - EGlobals.BOUND_Z_MIN) / cell_size);
                 if (pos_z >= z_count) pos_z = z_count - 1;
                 if (pos_z < 0) pos_z = 0;
-                cells[pos_x, pos_y, pos_z].AddLast(circle);
+                cells[pos_x, pos_y, pos_z].Add(circle);
                 
                 
                 //circle_index.Add(circle, i);
@@ -66,19 +66,19 @@ namespace PolyBrick.EllipsoidPacking
 
             public List<Ellipsoid> GetNeighborCellEllipsoids(int x, int y, int z)
             {
-                LinkedList<Ellipsoid> c1 = GetOneCell(x - 1, y - 1, z - 1);
-                LinkedList<Ellipsoid> c2 = GetOneCell(x, y - 1, z - 1);
-                LinkedList<Ellipsoid> c3 = GetOneCell(x - 1, y - 1, z);
-                LinkedList<Ellipsoid> c4 = GetOneCell(x, y - 1, z);
-                LinkedList<Ellipsoid> c5 = GetOneCell(x - 1, y - 1, z + 1);
-                LinkedList<Ellipsoid> c6 = GetOneCell(x, y - 1, z + 1);
-                LinkedList<Ellipsoid> c7 = GetOneCell(x + 1, y - 1, z - 1);
-                LinkedList<Ellipsoid> c8 = GetOneCell(x + 1, y - 1, z);
-                LinkedList<Ellipsoid> c9 = GetOneCell(x + 1, y - 1, z + 1);
-                LinkedList<Ellipsoid> c10 = GetOneCell(x - 1, y, z - 1);
-                LinkedList<Ellipsoid> c11 = GetOneCell(x - 1, y, z);
-                LinkedList<Ellipsoid> c12 = GetOneCell(x - 1, y, z + 1);
-                LinkedList<Ellipsoid> c13 = GetOneCell(x, y, z + 1);
+                List<Ellipsoid> c1 = GetOneCell(x - 1, y - 1, z - 1);
+                List<Ellipsoid> c2 = GetOneCell(x, y - 1, z - 1);
+                List<Ellipsoid> c3 = GetOneCell(x - 1, y - 1, z);
+                List<Ellipsoid> c4 = GetOneCell(x, y - 1, z);
+                List<Ellipsoid> c5 = GetOneCell(x - 1, y - 1, z + 1);
+                List<Ellipsoid> c6 = GetOneCell(x, y - 1, z + 1);
+                List<Ellipsoid> c7 = GetOneCell(x + 1, y - 1, z - 1);
+                List<Ellipsoid> c8 = GetOneCell(x + 1, y - 1, z);
+                List<Ellipsoid> c9 = GetOneCell(x + 1, y - 1, z + 1);
+                List<Ellipsoid> c10 = GetOneCell(x - 1, y, z - 1);
+                List<Ellipsoid> c11 = GetOneCell(x - 1, y, z);
+                List<Ellipsoid> c12 = GetOneCell(x - 1, y, z + 1);
+                List<Ellipsoid> c13 = GetOneCell(x, y, z + 1);
 
                 List<Ellipsoid> neighbors = new List<Ellipsoid>();
                 if (c1 != null) neighbors.AddRange(c1);
@@ -98,7 +98,7 @@ namespace PolyBrick.EllipsoidPacking
                 return neighbors;
             }
 
-            public LinkedList<Ellipsoid> GetOneCell(int x, int y, int z)
+            public List<Ellipsoid> GetOneCell(int x, int y, int z)
             {
                 if (x < 0 || y < 0 || z < 0 || x > x_count - 1 || y > y_count - 1 || z > z_count - 1)
                 {
@@ -107,7 +107,7 @@ namespace PolyBrick.EllipsoidPacking
                 return cells[x, y, z];
             }
 
-            public LinkedList<Ellipsoid> GetOneCell(Ellipsoid ellipsoid)
+            public List<Ellipsoid> GetOneCell(Ellipsoid ellipsoid)
             {
                 int pos_x = (int)Math.Floor((ellipsoid.position.X - EGlobals.BOUND_X_MIN) / cell_size);
                 if (pos_x >= x_count) pos_x = x_count - 1;

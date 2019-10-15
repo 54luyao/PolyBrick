@@ -24,9 +24,9 @@ namespace PolyBrick.EllipsoidPacking
         {
             if (EGlobals.EXISTING_POINTS.Count != 0)
             {
-                foreach (Point3d point in EGlobals.EXISTING_POINTS)
+                for (int i=0;i< EGlobals.EXISTING_POINTS.Count;i++)
                 {
-                    Ellipsoid existingEllipsoid = new Ellipsoid(point, EGlobals.MIN_RADIUS);
+                    Ellipsoid existingEllipsoid = new Ellipsoid(EGlobals.EXISTING_POINTS[i], EGlobals.MIN_RADIUS);
                     existingEllipsoid.CheckBorder();
                     this.ellipsoids.Add(existingEllipsoid);
                 }
@@ -50,7 +50,7 @@ namespace PolyBrick.EllipsoidPacking
             }
             for (int i = EGlobals.EXISTING_POINTS.Count; i < this.ellipsoids.Count; i++)
             {
-                LinkedList<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
+                List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
                 prev_list.Remove(ellipsoids[i]);
                 CheckBorders(i);
                 grid.Allocate(ellipsoids[i]);
@@ -58,18 +58,6 @@ namespace PolyBrick.EllipsoidPacking
                 {
                     ellipsoids[i].UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
                 }
-
-                //TODO:STRESS
-
-                //Stress stress = EGlobals.FEBackGround.interpolate(new Point3d(ellipsoids[i].position));
-                //if (EGlobals.HAS_GRADIENT) {
-                //    ellipsoids[i].UpdateRadius(stress);
-                //    ellipsoids[i].UpdateOrientation(stress);
-                //}
-
-
-
-                //TODO: Update Ellipsoid Orentation
             }
 
             for (int x = 0; x < grid.x_count; x++)
@@ -78,7 +66,7 @@ namespace PolyBrick.EllipsoidPacking
                 {
                     for (int z = 0; z < grid.z_count; z++)
                     {
-                        LinkedList<Ellipsoid> cell = grid.cells[x, y, z];
+                        List<Ellipsoid> cell = grid.cells[x, y, z];
                         if (cell.Count != 0)
                         {
                             Ellipsoid[] cell_array = new Ellipsoid[cell.Count];
@@ -130,7 +118,7 @@ namespace PolyBrick.EllipsoidPacking
                     //separate_forces[i] = separate_forces[i]; //Force option 3
                     ellipsoids[i].ApplyForce(separate_forces[i]);
                     //TODO: Delete from previous list
-                    LinkedList<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
+                    List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
                     prev_list.Remove(ellipsoids[i]);
                     this.ellipsoids[i].Move(); //Update only when there is force
                     if (EGlobals.HAS_TENSORFIELD)
@@ -142,9 +130,9 @@ namespace PolyBrick.EllipsoidPacking
 
                 //CheckBorders(i);
             }
-            foreach (int element in near_ellipsoids)
+            for (int i=0;i <near_ellipsoids.Count;i++)
             {
-                this.collisions = this.collisions + element;
+                this.collisions = this.collisions + near_ellipsoids[i];
             }
         }
 
