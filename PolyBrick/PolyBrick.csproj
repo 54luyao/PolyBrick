@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ILMerge.3.0.21\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.21\build\ILMerge.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4B9001B3-3D1E-418E-91D3-64DFB8AFF495}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PolyBrick</RootNamespace>
+    <AssemblyName>PolyBrick</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GH_IO">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rhino 6\Plug-ins\Grasshopper\GH_IO.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Grasshopper">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rhino 6\Plug-ins\Grasshopper\Grasshopper.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="RhinoCommon">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rhino 6\System\RhinoCommon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Analysis\DeconstructTensorFieldComponent.cs" />
+    <Compile Include="Circle.cs" />
+    <Compile Include="EGlobals.cs" />
+    <Compile Include="Ellipsoid.cs" />
+    <Compile Include="EllipsoidPackingComponent.cs" />
+    <Compile Include="EllipsoidPackingLiveComponent.cs" />
+    <Compile Include="EllipsoidToMeshComponent.cs" />
+    <Compile Include="GlobalRandom.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="Grid.cs" />
+    <Compile Include="KissingSpheresComponent.cs" />
+    <Compile Include="KissingEllipsoidsComponent.cs" />
+    <Compile Include="Pack.cs" />
+    <Compile Include="PackEllipsoid.cs" />
+    <Compile Include="PackEllipsoid_NoSpatialPartioning.cs" />
+    <Compile Include="Analysis\TempEvaluateTensorField.cs" />
+    <Compile Include="Params\Tensor_Field.cs" />
+    <Compile Include="SpherePackingComponent.cs" />
+    <Compile Include="PolyBrickInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\spicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ksicon1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ellipsoid_packing-01-01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ellipsoid_packing-01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Tensor Field-39.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-39.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-40.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-41.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-43.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-44.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-46.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-45.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-47.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-49.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-50.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).gha"
+
+Erase "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FallbackCulture>en-US</FallbackCulture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartProgram>d:\Program Files\Rhino 6\System\Rhino.exe</StartProgram>
+    <StartArguments>
+    </StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILMerge.3.0.21\build\ILMerge.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.3.0.21\build\ILMerge.props'))" />
+  </Target>
+</Project>
