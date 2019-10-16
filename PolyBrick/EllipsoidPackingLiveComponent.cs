@@ -5,6 +5,7 @@ using Grasshopper.Kernel;
 using Rhino.Geometry;
 using PolyBrick.Params;
 
+
 namespace PolyBrick.EllipsoidPacking
 {
     public class EllipsoidPackingLiveComponent : GH_Component
@@ -47,7 +48,6 @@ namespace PolyBrick.EllipsoidPacking
             pManager.Register_IntegerParam("Iteration", "i", "Current iteration", GH_ParamAccess.item);
         }
 
-        bool HAS_TENSORFIELD;
         int Initial_Number;
         double MAX_SPEED;
         double MAX_FORCE;
@@ -109,12 +109,13 @@ namespace PolyBrick.EllipsoidPacking
             int y = (int)Math.Ceiling((EGlobals.BOUND_Y_MAX - EGlobals.BOUND_Y_MIN) / cell_size);
             int z = (int)Math.Ceiling((EGlobals.BOUND_Z_MAX - EGlobals.BOUND_Z_MIN) / cell_size);
 
+            Message = "Paused";
             if (EXISTING_POINTS == null)
             {
                 EXISTING_POINTS = new List<Point3d>();
                 if (existingpoints.Count != 0)
                 {
-                    for ( int index =0;index< existingpoints.Count;index++)
+                    for (int index = 0; index < existingpoints.Count; index++)
                     {
                         if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
                         {
@@ -141,6 +142,7 @@ namespace PolyBrick.EllipsoidPacking
 
             if (reset)
             {
+                Message = "Reset";
                 grid = new Grid(x, y, z, cell_size);
                 i = 0;
                 total_i = 0;
@@ -148,7 +150,7 @@ namespace PolyBrick.EllipsoidPacking
                 EXISTING_POINTS = new List<Point3d>();
                 if (existingpoints.Count != 0)
                 {
-                    for (int index=0; index< existingpoints.Count;index++)
+                    for (int index = 0; index < existingpoints.Count; index++)
                     {
                         if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
                         {
@@ -171,7 +173,7 @@ namespace PolyBrick.EllipsoidPacking
                 if (new_pack.collisions == 0)
                 {
                     last_ellipsoids = new List<EllipsoidGoo>();
-                    for (int index =0;index< new_pack.ellipsoids.Count;index++)
+                    for (int index = 0; index < new_pack.ellipsoids.Count; index++)
                     {
                         last_ellipsoids.Add(new EllipsoidGoo(new_pack.ellipsoids[index]));
                     }
@@ -186,24 +188,30 @@ namespace PolyBrick.EllipsoidPacking
                 total_i++;
                 if (i >= Max_iterations && i != total_i)
                 {
+                    Message = "Converged";
                     //DA.SetDataList(0, last_ellipsoids.ToArray());
                 }
-                else if (i == Max_iterations && i == total_i)
+                else if (i >= Max_iterations && i == total_i)
                 {
+                    Message = "Break";
                     AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Too many initial spheres. Getting no result.");
                 }
                 else
                 {
+                    Message = "Running";
                     ExpireSolution(true);
                 }
             }
-            if (new_pack.ellipsoids != null) {
-                if(i >= Max_iterations && i != total_i) DA.SetDataList(0, last_ellipsoids.ToArray());
+            if (new_pack.ellipsoids != null)
+            {
+                if (i >= Max_iterations && i != total_i) DA.SetDataList(0, last_ellipsoids.ToArray());
                 else DA.SetDataList(0, EllipsoidGoo.EllipsoidGooList(new_pack.ellipsoids).ToArray());
             }
             DA.SetData(1, total_i);
+
         }
 
+        
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
@@ -226,5 +234,6 @@ namespace PolyBrick.EllipsoidPacking
         }
 
         internal PackEllipsoid New_pack { get => new_pack; set => new_pack = value; }
+
     }
 }

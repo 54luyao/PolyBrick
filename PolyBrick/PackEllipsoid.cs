@@ -48,17 +48,17 @@ namespace PolyBrick.EllipsoidPacking
                 separate_forces.Add(new Vector3d(0, 0, 0));
                 near_ellipsoids.Add(0);
             }
-            for (int i = EGlobals.EXISTING_POINTS.Count; i < this.ellipsoids.Count; i++)
-            {
-                List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
-                prev_list.Remove(ellipsoids[i]);
-                CheckBorders(i);
-                grid.Allocate(ellipsoids[i]);
-                if (EGlobals.HAS_TENSORFIELD)
-                {
-                    ellipsoids[i].UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
-                }
-            }
+            //for (int i = EGlobals.EXISTING_POINTS.Count; i < this.ellipsoids.Count; i++)
+            //{
+            //    List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
+            //    prev_list.Remove(ellipsoids[i]);
+            //    CheckBorders(i);
+            //    grid.Allocate(ellipsoids[i]);
+            //    if (EGlobals.HAS_TENSORFIELD)
+            //    {
+            //        ellipsoids[i].UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+            //    }
+            //}
 
             for (int x = 0; x < grid.x_count; x++)
             {
@@ -110,6 +110,8 @@ namespace PolyBrick.EllipsoidPacking
 
             for (int i = EGlobals.EXISTING_POINTS.Count; i < this.ellipsoids.Count; i++)
             {
+                List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
+                prev_list.Remove(ellipsoids[i]);
                 double length = separate_forces[i].Length;
                 if (length > 0) //Need this to control step size??
                 {
@@ -118,17 +120,16 @@ namespace PolyBrick.EllipsoidPacking
                     //separate_forces[i] = separate_forces[i]; //Force option 3
                     ellipsoids[i].ApplyForce(separate_forces[i]);
                     //TODO: Delete from previous list
-                    List<Ellipsoid> prev_list = grid.GetOneCell(ellipsoids[i]);
-                    prev_list.Remove(ellipsoids[i]);
+                    
                     this.ellipsoids[i].Move(); //Update only when there is force
-                    if (EGlobals.HAS_TENSORFIELD)
-                    {
-                        ellipsoids[i].UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
-                    }
-                    grid.Allocate(ellipsoids[i]);
+                    
                 }
-
-                //CheckBorders(i);
+                CheckBorders(i);
+                if (EGlobals.HAS_TENSORFIELD)
+                {
+                    ellipsoids[i].UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+                }
+                grid.Allocate(ellipsoids[i]);
             }
             for (int i=0;i <near_ellipsoids.Count;i++)
             {
