@@ -43,7 +43,7 @@ namespace PolyBrick.EllipsoidPacking
             EllipsoidGoo eGoo = new EllipsoidGoo();
             if (!DA.GetData(0, ref eGoo)) return;
             Ellipsoid e = eGoo.Value;
-            Mesh sphereMesh = Mesh.CreateIcoSphere(new Sphere(new Point3d(0,0,0),1),3);
+            Mesh sphereMesh = Mesh.CreateQuadSphere(new Sphere(new Point3d(0,0,0),1),3);
             sphereMesh.Transform(Transform.Scale(Plane.WorldXY, e.radiusA, e.radiusB, e.radiusC));
             sphereMesh.Transform(Transform.Rotation(new Vector3d(0, 0, 1), e.orientation, new Point3d(0,0,0)));
             sphereMesh.Translate(e.position);

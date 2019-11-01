@@ -23,6 +23,7 @@ namespace PolyBrick.EllipsoidPacking
         public double radiusC;
         public Vector3d orientation;
         public static Random rand = new Random();
+        //public BoundingBox bBox;//AABB in object space
 
         public Ellipsoid()
         {
@@ -44,6 +45,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = EGlobals.MIN_RADIUS;
             radiusB = EGlobals.MIN_RADIUS;
             radiusC = EGlobals.MAX_RADIUS;
+            //bBox = new BoundingBox(- radiusA, - radiusB, - radiusC,  radiusA,  radiusB,  radiusC);
         }
 
         public Ellipsoid(Point3d point, double r)
@@ -55,6 +57,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = EGlobals.MIN_RADIUS;
             radiusB = EGlobals.MIN_RADIUS;
             radiusC = EGlobals.MAX_RADIUS;
+            //bBox = new BoundingBox(- radiusA, - radiusB,  - radiusC,   radiusA,   radiusB,  radiusC);
         }
 
         public Ellipsoid(Ellipsoid e)
@@ -66,6 +69,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = e.radiusA;
             radiusB = e.radiusB;
             radiusC = e.radiusC;
+            //bBox = e.bBox;
         }
 
         public void CheckBorder()
@@ -103,7 +107,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusC = EGlobals.MAX_RADIUS - minFactor * (EGlobals.MAX_RADIUS - EGlobals.MIN_RADIUS);
             radiusB = EGlobals.MAX_RADIUS - maxFactor * (EGlobals.MAX_RADIUS - EGlobals.MIN_RADIUS);
             radiusA = EGlobals.MAX_RADIUS - maxFactor * (EGlobals.MAX_RADIUS - EGlobals.MIN_RADIUS);
-
+            //bBox = new BoundingBox(-radiusA, -radiusB, -radiusC, radiusA, radiusB, radiusC);
         }
 
         //public void UpdateRadius(Stress stress)
@@ -150,6 +154,34 @@ namespace PolyBrick.EllipsoidPacking
             double rim2 = Math.Sqrt(1 / (Math.Pow(R_c2c.X / other.radiusA, 2) + Math.Pow(R_c2c.Y / other.radiusB, 2) + Math.Pow(R_c2c.Z / other.radiusC, 2)));
             return rim1+rim2;
         }
+
+        //public static bool BroadPhaseCollision(Ellipsoid i, Ellipsoid j)
+        //{
+        //    BoundingBox bBoxi = new BoundingBox(i.bBox.GetCorners());
+        //    bBoxi.Transform(Transform.Translation(i.position));
+        //    bBoxi.Transform(Transform.Rotation(Vector3d.ZAxis,i.orientation,(Point3d)i.position));
+        //    BoundingBox bBoxj = new BoundingBox(j.bBox.GetCorners());
+        //    bBoxj.Transform(Transform.Translation(j.position));
+        //    bBoxj.Transform(Transform.Rotation(Vector3d.ZAxis, j.orientation, (Point3d)j.position));
+        //    double minXi = bBoxi.Min.X;
+        //    double maxXi = bBoxi.Max.X;
+        //    double minXj = bBoxj.Min.X;
+        //    double maxXj = bBoxj.Max.X;
+        //    if (maxXi < minXj || maxXj < minXi) return false;
+
+        //    double minYi = bBoxi.Min.Y;
+        //    double maxYi = bBoxi.Max.Y;
+        //    double minYj = bBoxj.Min.Y;
+        //    double maxYj = bBoxj.Max.Y;
+        //    if (maxYi < minYj || maxYj < minYi) return false;
+
+        //    double minZi = bBoxi.Min.Z;
+        //    double maxZi = bBoxi.Max.Z;
+        //    double minZj = bBoxj.Min.Z;
+        //    double maxZj = bBoxj.Max.Z;
+        //    if (maxZi < minZj || maxZj < minZi) return false;
+        //    return true;
+        //}
     }
 
     public class EllipsoidGoo : GH_Goo<Ellipsoid>
@@ -227,5 +259,6 @@ namespace PolyBrick.EllipsoidPacking
         }
 
     }
+
     
 }

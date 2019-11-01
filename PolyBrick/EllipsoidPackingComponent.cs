@@ -29,11 +29,11 @@ namespace PolyBrick.EllipsoidPacking
             pManager.AddIntegerParameter("Initial number", "Init_Number", "Initial number of spheres.", GH_ParamAccess.item);
             pManager.AddNumberParameter("Maximum radius", "Max_R", "Maximum axis along MaxPrinciple stress direction. If there is no gradient control, set this maximum radius for all the spheres", GH_ParamAccess.item);
             pManager.AddNumberParameter("Minimum radius", "Min_R", "Minimum axis along MaxPrinciple stress direction. If there is no gradient control, this value will be ignored.", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Step Size", "Step_size", "Distance factor that each sphere moves in each iteration.", GH_ParamAccess.item);
+            //pManager.AddNumberParameter("Step Size", "Step_size", "Distance factor that each sphere moves in each iteration.", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Maximum iterations", "Max_iterations", "Maximum iteration for computing.", GH_ParamAccess.item);
             pManager.AddBrepParameter("Boundary volume", "Boundary", "Boundary volume for sphere packing.", GH_ParamAccess.item);
             pManager.AddParameter(new TensorFieldParameter(),"TensorField", "TF", "Optional Tensor Field for packing control.", GH_ParamAccess.item);
-            pManager[8].Optional = true;
+            pManager[7].Optional = true;
         }
 
         /// <summary>
@@ -59,22 +59,12 @@ namespace PolyBrick.EllipsoidPacking
             if (!DA.GetData(2, ref EGlobals.Initial_Number)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Initial number missing."); return; }
             if (!DA.GetData(3, ref EGlobals.MAX_RADIUS)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Maximum radius missing."); return; }
             if (!DA.GetData(4, ref EGlobals.MIN_RADIUS)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Minimum radius missing."); return; }
-            double Step_size = 0;
-            if (!DA.GetData(5, ref Step_size)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Step size missing."); return; }
+            //double Step_size = 0;
+            //if (!DA.GetData(5, ref Step_size)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Step size missing."); return; }
             int Max_iterations = 0;
-            if (!DA.GetData(6, ref Max_iterations)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Maximum iteration missing."); return; }
-            if (!DA.GetData(7, ref EGlobals.BOUNDARY)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Boundary volume missing."); return; }
-            EGlobals.HAS_TENSORFIELD = DA.GetData(8, ref EGlobals.TENSORFIELDGOO);
-
-
-            //TODO:STRESS
-
-            //EGlobals.FEBackGround = new Background(Gradient);
-
-
-
-            EGlobals.MAX_SPEED = Step_size;
-            EGlobals.MAX_FORCE = Step_size;
+            if (!DA.GetData(5, ref Max_iterations)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Maximum iteration missing."); return; }
+            if (!DA.GetData(6, ref EGlobals.BOUNDARY)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Boundary volume missing."); return; }
+            EGlobals.HAS_TENSORFIELD = DA.GetData(7, ref EGlobals.TENSORFIELDGOO);
 
             Point3d min_corner = EGlobals.BOUNDARY.GetBoundingBox(false).Min;
             Point3d max_corner = EGlobals.BOUNDARY.GetBoundingBox(false).Max;
@@ -133,25 +123,15 @@ namespace PolyBrick.EllipsoidPacking
                         new_pack.ellipsoids.Add(new_ellipsoid);
                         grid.Allocate(new_ellipsoid);
                         grid.ellipsoid_index.Add(new_ellipsoid, new_pack.ellipsoids.Count - 1);
-                        Console.WriteLine("Generating new sphere!");
+                        //Console.WriteLine("Generating new sphere!");
                         i = 0;
                     }
-                    if (total_i < 100)
-                    {
-                        EGlobals.MAX_SPEED = EGlobals.MAX_RADIUS;
-                        EGlobals.MAX_FORCE = EGlobals.MAX_RADIUS;
-                    }
-                    else
-                    {
-                        EGlobals.MAX_SPEED = Step_size;
-                        EGlobals.MAX_FORCE = Step_size;
-                    }
+
                     new_pack.pack(grid); // Collision detection and move 
                     i++;
                     total_i++;
                     if (i == Max_iterations && i != total_i)
                     {
-                        Console.WriteLine("Break without converge!");
                         DA.SetDataList(0, last_ellipsoids.ToArray()); //TODO:Output point list.
                         break;
                     }
@@ -161,14 +141,7 @@ namespace PolyBrick.EllipsoidPacking
                         break;
                     }
                 }
-                Console.WriteLine("Finish packing in " + total_i + " iterations");
-                Console.WriteLine(new_pack.ellipsoids.Count + " spheres in total");
-                Console.WriteLine("Initial number: " + EGlobals.Initial_Number);
-                Console.WriteLine("Max radius: " + EGlobals.MAX_RADIUS);
-                Console.WriteLine("Min radius: " + EGlobals.MIN_RADIUS);
-                Console.WriteLine("Max iterations: " + Max_iterations);
             }
-
         }
 
         /// <summary>
