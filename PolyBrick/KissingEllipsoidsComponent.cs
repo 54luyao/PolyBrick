@@ -53,9 +53,9 @@ namespace PolyBrick.EllipsoidPacking
                 ellipsoids.Add(eg.Value);
             }
             double min_tolerance = 0;
-            if (!DA.GetData(1, ref min_tolerance)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid minimum tolerance."); return; }
+            DA.GetData(1, ref min_tolerance);
             double max_tolerance = 0;
-            if (!DA.GetData(2, ref max_tolerance)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid maximum tolerance."); return; }
+            DA.GetData(2, ref max_tolerance);
             List<Point3d> centroids = new List<Point3d>();
             List<Line> lattice = new List<Line>();
             for (int i = 0; i < ellipsoids.Count; i++)

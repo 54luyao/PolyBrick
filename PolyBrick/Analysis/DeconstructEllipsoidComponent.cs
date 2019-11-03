@@ -6,16 +6,16 @@ using Rhino.Geometry;
 
 namespace PolyBrick.EllipsoidPacking
 {
-    public class EllipsoidToMeshComponent : GH_Component
+    public class DeconstructEllipsoidComponent : GH_Component
     {
         public override GH_Exposure Exposure => GH_Exposure.secondary;
 
         /// <summary>
-        /// Initializes a new instance of the EllipsoidToMeshComponent class.
+        /// Initializes a new instance of the DeconstructEllipsoidComponent class.
         /// </summary>
-        public EllipsoidToMeshComponent()
-          : base("Ellipsoid To Mesh", "EllipsoidToMesh",
-              "Convert Ellipsoid to Mesh",
+        public DeconstructEllipsoidComponent()
+          : base("Deconstruct Ellipsoid", "DeEllipsoid",
+              "Deconstruct ellipsoid.",
               "PolyBrick", "Ellipsoid")
         {
         }
@@ -25,7 +25,7 @@ namespace PolyBrick.EllipsoidPacking
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddParameter(new EllipsoidParameter(), "Ellipsoid", "E", "Ellipsoid to be converted.", GH_ParamAccess.item);
+            pManager.AddParameter(new EllipsoidParameter(), "Ellipsoid", "E", "Ellipsoid to be deconstructed.", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -33,7 +33,11 @@ namespace PolyBrick.EllipsoidPacking
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_MeshParam("Mesh", "M", "Output Mesh.");
+            pManager.Register_PointParam("Centorid", "C", "Centroid of Ellipsoid.");
+            pManager.Register_DoubleParam("RadiusX", "RX", "Radius along X direction in object space.");
+            pManager.Register_DoubleParam("RadiusY", "RY", "Radius along Y direction in object space.");
+            pManager.Register_DoubleParam("RadiusZ", "RZ", "Radius along Z direction in object space.");
+            pManager.Register_VectorParam("Orientation", "O", "Orientation along Z direction in object space.");
         }
 
         /// <summary>
@@ -42,14 +46,13 @@ namespace PolyBrick.EllipsoidPacking
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            EllipsoidGoo eGoo = new EllipsoidGoo();
-            if (!DA.GetData(0, ref eGoo)) return;
-            Ellipsoid e = eGoo.Value;
-            Mesh sphereMesh = Mesh.CreateQuadSphere(new Sphere(new Point3d(0,0,0),1),3);
-            sphereMesh.Transform(Transform.Scale(Plane.WorldXY, e.radiusA, e.radiusB, e.radiusC));
-            sphereMesh.Transform(Transform.Rotation(new Vector3d(0, 0, 1), e.orientation, new Point3d(0,0,0)));
-            sphereMesh.Translate(e.position);
-            DA.SetData(0, sphereMesh);
+            EllipsoidGoo ellipsoidGoo = new EllipsoidGoo();
+            DA.GetData(0, ref ellipsoidGoo);
+            DA.SetData(0, ellipsoidGoo.Value.position);
+            DA.SetData(1, ellipsoidGoo.Value.radiusA);
+            DA.SetData(2, ellipsoidGoo.Value.radiusB);
+            DA.SetData(3, ellipsoidGoo.Value.radiusC);
+            DA.SetData(4, ellipsoidGoo.Value.orientation);
         }
 
         /// <summary>
@@ -61,7 +64,7 @@ namespace PolyBrick.EllipsoidPacking
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return Resource1.PolyBrickIcons_48;
+                return Resource1.PolyBrickIcons_51 ;
             }
         }
 
@@ -70,7 +73,7 @@ namespace PolyBrick.EllipsoidPacking
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("f979b58e-7761-4892-9e3e-1dcb8c5d1126"); }
+            get { return new Guid("b37c6794-12d7-4253-bac0-6eb3b280c3a3"); }
         }
     }
 }

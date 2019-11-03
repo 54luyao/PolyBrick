@@ -8,13 +8,15 @@ namespace PolyBrick.Params
 {
     public class TempEvaluateTensorField : GH_Component
     {
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
+
         /// <summary>
         /// Initializes a new instance of the TempEvaluateTensorField class.
         /// </summary>
         public TempEvaluateTensorField()
           : base("Evaluate Tensor Field", "EvaTF",
               "Evaluate the tensor value.",
-              "PolyBrick", "Analysis")
+              "PolyBrick", "Tensor Field")
         {
         }
 

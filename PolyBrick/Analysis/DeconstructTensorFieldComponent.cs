@@ -8,13 +8,15 @@ namespace PolyBrick.Params
 {
     public class DeconstructTensorField : GH_Component
     {
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
+
         /// <summary>
         /// Initializes a new instance of the Deconstruct_Tensor_Field class.
         /// </summary>
         public DeconstructTensorField()
           : base("Deconstruct Tensor Field", "DeTensorField",
               "Deconstruct a tensor field",
-              "PolyBrick", "Analysis")
+              "PolyBrick", "Tensor Field")
         {
         }
 

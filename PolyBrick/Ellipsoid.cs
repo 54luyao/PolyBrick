@@ -10,6 +10,7 @@ using PolyBrick.Params;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System.Drawing;
+using Rhino.Collections;
 
 namespace PolyBrick.EllipsoidPacking
 {
@@ -22,6 +23,7 @@ namespace PolyBrick.EllipsoidPacking
         public double radiusB;
         public double radiusC;
         public Vector3d orientation;
+        public bool moved;
         public static Random rand = new Random();
         //public BoundingBox bBox;//AABB in object space
 
@@ -45,6 +47,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = EGlobals.MIN_RADIUS;
             radiusB = EGlobals.MIN_RADIUS;
             radiusC = EGlobals.MAX_RADIUS;
+            moved = true;
             //bBox = new BoundingBox(- radiusA, - radiusB, - radiusC,  radiusA,  radiusB,  radiusC);
         }
 
@@ -57,6 +60,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = EGlobals.MIN_RADIUS;
             radiusB = EGlobals.MIN_RADIUS;
             radiusC = EGlobals.MAX_RADIUS;
+            moved = true;
             //bBox = new BoundingBox(- radiusA, - radiusB,  - radiusC,   radiusA,   radiusB,  radiusC);
         }
 
@@ -69,6 +73,7 @@ namespace PolyBrick.EllipsoidPacking
             radiusA = e.radiusA;
             radiusB = e.radiusB;
             radiusC = e.radiusC;
+            moved = e.moved;
             //bBox = e.bBox;
         }
 
@@ -95,6 +100,63 @@ namespace PolyBrick.EllipsoidPacking
             }
 
             return new Ellipsoid(x, y, z);
+        }
+
+        public static Ellipsoid RandomEllipsoid(PackEllipsoid pack)
+        {
+            if (pack.ellipsoids.Count > 0)
+            {
+                Point3d min_corner = EGlobals.BOUNDARY.GetBoundingBox(false).Min;
+                Point3d max_corner = EGlobals.BOUNDARY.GetBoundingBox(false).Max;
+                double cell_size = EGlobals.MIN_RADIUS;
+                int xCount = (int)Math.Ceiling((EGlobals.BOUND_X_MAX - EGlobals.BOUND_X_MIN) / cell_size);
+                int yCount = (int)Math.Ceiling((EGlobals.BOUND_Y_MAX - EGlobals.BOUND_Y_MIN) / cell_size);
+                int zCount = (int)Math.Ceiling((EGlobals.BOUND_Z_MAX - EGlobals.BOUND_Z_MIN) / cell_size);
+                List<Point3d> pList = new List<Point3d>();
+                for (int i = 0; i < pack.ellipsoids.Count; i++)
+                {
+                    pList.Add(new Point3d(pack.ellipsoids[i].position));
+                }
+                Point3dList centroidList = new Point3dList(pList);
+                for (int x = 0; x < xCount; x++)
+                {
+                    for (int y = 0; y < yCount; y++)
+                    {
+                        for (int z = 0; z < zCount; z++)
+                        {
+                            Point3d samplePoint = new Point3d(x * cell_size + min_corner.X, y * cell_size + min_corner.Y, z * cell_size + min_corner.Z);
+                            if (EGlobals.BOUNDARY.IsPointInside(samplePoint, RhinoMath.SqrtEpsilon, true))
+                            {
+                                int nearIndex = centroidList.ClosestIndex(samplePoint);
+                                Point3d nearest = pList[nearIndex];
+                                Vector3d orientation = new Vector3d();
+                                double maxFactor = 0;
+                                double minFactor = 0;
+                                EGlobals.TENSORFIELDGOO.Value.GetOrientation(samplePoint, ref orientation, ref maxFactor, ref minFactor);
+                                double rMin = EGlobals.MAX_RADIUS - maxFactor * (EGlobals.MAX_RADIUS - EGlobals.MIN_RADIUS);
+                                if (rMin + pack.ellipsoids[nearIndex].radiusA < samplePoint.DistanceTo(nearest))
+                                {
+                                    return new Ellipsoid(samplePoint, rMin);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            double randx;
+            double randy;
+            double randz;
+            randx = rand.NextDouble() * (EGlobals.BOUND_X_MAX - EGlobals.BOUND_X_MIN) + EGlobals.BOUND_X_MIN;
+            randy = rand.NextDouble() * (EGlobals.BOUND_Y_MAX - EGlobals.BOUND_Y_MIN) + EGlobals.BOUND_Y_MIN;
+            randz = rand.NextDouble() * (EGlobals.BOUND_Z_MAX - EGlobals.BOUND_Z_MIN) + EGlobals.BOUND_Z_MIN;
+            while (!EGlobals.BOUNDARY.IsPointInside(new Point3d(randx, randy, randz), RhinoMath.SqrtEpsilon, true))
+            {
+                randx = rand.NextDouble() * (EGlobals.BOUND_X_MAX - EGlobals.BOUND_X_MIN) + EGlobals.BOUND_X_MIN;
+                randy = rand.NextDouble() * (EGlobals.BOUND_Y_MAX - EGlobals.BOUND_Y_MIN) + EGlobals.BOUND_Y_MIN;
+                randz = rand.NextDouble() * (EGlobals.BOUND_Z_MAX - EGlobals.BOUND_Z_MIN) + EGlobals.BOUND_Z_MIN;
+            }
+
+            return new Ellipsoid(randx, randy, randz);
         }
 
         public void UpdateSizeOrientation(TensorField tf)

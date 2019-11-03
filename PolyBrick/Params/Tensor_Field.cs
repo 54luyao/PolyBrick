@@ -262,7 +262,7 @@ namespace PolyBrick.Params
     public class TensorFieldComponent : GH_Component
     {
         public TensorFieldComponent()
-            : base("Tensor Field From CSV", "TFFromCSV", "Create a tensor field from csv file.", "PolyBrick", "Input") { }
+            : base("Tensor Field From CSV", "TFFromCSV", "Create a tensor field from csv file.", "PolyBrick", "Tensor Field") { }
 
         protected override Bitmap Icon
         {

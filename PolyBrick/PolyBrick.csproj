@@ -63,8 +63,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\DeconstructEllipsoidComponent.cs" />
     <Compile Include="Analysis\DeconstructTensorFieldComponent.cs" />
     <Compile Include="Circle.cs" />
+    <Compile Include="ConstructTensorFieldComponent.cs" />
     <Compile Include="EGlobals.cs" />
     <Compile Include="Ellipsoid.cs" />
     <Compile Include="EllipsoidPackingComponent.cs" />
@@ -143,6 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PolyBrickIcons-50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-51.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
