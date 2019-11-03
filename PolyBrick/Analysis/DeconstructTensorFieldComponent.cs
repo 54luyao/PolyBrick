@@ -57,14 +57,10 @@ namespace PolyBrick.Params
             for (int i =0;i <count; i++)
             {
                 Tensor tensor = tensorField.Tensors[i];
-                locations.Add(new Point3d(tensor.Location));
-                Plane rotationPlane = new Plane(Plane.WorldXY);
-                rotationPlane.Rotate(tensor.Rotation_XY, rotationPlane.XAxis);
-                rotationPlane.Rotate(tensor.Rotation_YZ, rotationPlane.YAxis);
-                rotationPlane.Rotate(tensor.Rotation_ZX, rotationPlane.ZAxis);
-                maxS.Add(tensor.Magnitude_X * rotationPlane.YAxis);
-                midS.Add(tensor.Magnitude_Y * rotationPlane.ZAxis);
-                minS.Add(tensor.Magnitude_Z * rotationPlane.XAxis);
+                locations.Add(tensor.plane.Origin);
+                maxS.Add(tensor.Magnitude_X * tensor.plane.XAxis);
+                midS.Add(tensor.Magnitude_Y * tensor.plane.YAxis);
+                minS.Add(tensor.Magnitude_Z * tensor.plane.ZAxis);
             }
             //Point3d[] points= new Point3d[count];
             //tensorField.Nodes.CopyTo(points);

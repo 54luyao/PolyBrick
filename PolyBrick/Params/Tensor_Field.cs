@@ -19,10 +19,7 @@ namespace PolyBrick.Params
         private double magnitude_x;
         private double magnitude_y;
         private double magnitude_z;
-        private double rotation_x;
-        private double rotation_y;
-        private double rotation_z;
-        private Point3d location;
+        public Plane plane;
 
         public double Magnitude_X
         {
@@ -42,52 +39,34 @@ namespace PolyBrick.Params
             set { magnitude_z = value; }
         }
 
-        public double Rotation_YZ
-        {
-            //In radians
-            get { return rotation_x; }
-            set { rotation_x = value; }
-        }
-
-        public double Rotation_ZX
-        {
-            //In radians
-            get { return rotation_y; }
-            set { rotation_y = value; }
-        }
-
-        public double Rotation_XY
-        {
-            //In radians
-            get { return rotation_z; }
-            set { rotation_z = value; }
-        }
-
-        public Point3d Location
-        {
-            get { return location; }
-            set { location = value; }
-        }
-
         public Tensor()
         {
             magnitude_x = 0;
             magnitude_y = 0;
             magnitude_z = 0;
-            rotation_x = 0;
-            rotation_y = 0;
-            rotation_z = 0;
-            location = new Point3d(0, 0, 0);
+            plane = Plane.WorldXY;
         }
+
+        public Tensor(Plane p, double mx,double my, double mz)
+        {
+            magnitude_x = mx;
+            magnitude_y = my;
+            magnitude_z = mz;
+            plane = p;
+        }
+
         public Tensor(double mx, double my, double mz, double rx, double ry, double rz, double x, double y, double z)
         {
             magnitude_x = mx;
             magnitude_y = my;
             magnitude_z = mz;
-            rotation_x = rx;
-            rotation_y = ry;
-            rotation_z = rz;
-            location = new Point3d(x, y, z);
+            plane = Plane.WorldXY;
+            plane.Rotate(rx, plane.XAxis);
+            plane.Rotate(ry, plane.YAxis);
+            plane.Rotate(rz, plane.ZAxis);
+            plane.OriginY = x;
+            plane.OriginZ = y;
+            plane.OriginX = z;
         }
     }
 
@@ -101,6 +80,30 @@ namespace PolyBrick.Params
         public TensorField()
         {
             Tensors = new List<Tensor>();
+            Nodes = new Point3dList();
+            MaxStress = 0;
+            MinStress = 0;
+        }
+
+        public TensorField(List<Plane> planes, List<double> xs, List<double> ys, List<double> zs)
+        {
+            Tensors = new List<Tensor>();
+            MaxStress = Double.MinValue;
+            MinStress = Double.MaxValue;
+            Nodes = new Point3dList();
+            for (int i = 0; i < planes.Count; i++)
+            {
+                Tensor tensor = new Tensor(planes[i], xs[i], ys[i], zs[i]);
+                Tensors.Add(tensor);
+                Nodes.Add(tensor.plane.Origin);
+            }
+            List<double> stresses = new List<double>();
+            stresses.AddRange(xs.Select(x=>Math.Abs(x)).ToList());
+            stresses.AddRange(ys.Select(x => Math.Abs(x)).ToList());
+            stresses.AddRange(zs.Select(x => Math.Abs(x)).ToList());
+            stresses.Sort();
+            MaxStress = stresses[stresses.Count - 1];
+            MinStress = stresses[0];
         }
 
         public TensorField(string path)
@@ -117,21 +120,23 @@ namespace PolyBrick.Params
             {
                 string[] fields = parser.ReadFields();
                 Tensor tensor = new Tensor();
-                tensor.Location = new Point3d(Double.Parse(fields[3], NumberStyles.Float), Double.Parse(fields[1], NumberStyles.Float), Double.Parse(fields[2], NumberStyles.Float));
-                tensorLocations.Add(tensor.Location);
-                tensor.Magnitude_X = Double.Parse(fields[4], NumberStyles.Float);
+                tensor.plane.Rotate(Double.Parse(fields[7], NumberStyles.Float) / 180 * Math.PI, tensor.plane.XAxis);
+                tensor.plane.Rotate(Double.Parse(fields[8], NumberStyles.Float) / 180 * Math.PI, tensor.plane.YAxis);
+                tensor.plane.Rotate(Double.Parse(fields[9], NumberStyles.Float) / 180 * Math.PI, tensor.plane.ZAxis);
+                tensor.plane.OriginX = Double.Parse(fields[3], NumberStyles.Float);
+                tensor.plane.OriginY = Double.Parse(fields[1], NumberStyles.Float);
+                tensor.plane.OriginZ = Double.Parse(fields[2], NumberStyles.Float);
+                tensorLocations.Add(tensor.plane.Origin);
+                tensor.Magnitude_X = Double.Parse(fields[6], NumberStyles.Float);
                 MaxStress = Math.Max(MaxStress, Math.Abs(tensor.Magnitude_X));
                 MinStress = Math.Min(MinStress, Math.Abs(tensor.Magnitude_X));
-                tensor.Magnitude_Y = Double.Parse(fields[5], NumberStyles.Float);
+                tensor.Magnitude_Y = Double.Parse(fields[4], NumberStyles.Float);
                 MaxStress = Math.Max(MaxStress, Math.Abs(tensor.Magnitude_Y));
                 MinStress = Math.Min(MinStress, Math.Abs(tensor.Magnitude_Y));
-                tensor.Magnitude_Z = Double.Parse(fields[6], NumberStyles.Float);
+                tensor.Magnitude_Z = Double.Parse(fields[5], NumberStyles.Float);
                 MaxStress = Math.Max(MaxStress, Math.Abs(tensor.Magnitude_Z));
                 MinStress = Math.Min(MinStress, Math.Abs(tensor.Magnitude_Z));
-                tensor.Rotation_XY = Double.Parse(fields[7], NumberStyles.Float) / 180 * Math.PI;
-                tensor.Rotation_YZ = Double.Parse(fields[8], NumberStyles.Float) / 180 * Math.PI;
-                tensor.Rotation_ZX = Double.Parse(fields[9], NumberStyles.Float) / 180 * Math.PI;
-                this.Tensors.Add(tensor);
+                Tensors.Add(tensor);
             }
             Nodes = new Point3dList(tensorLocations);
         }
@@ -168,20 +173,16 @@ namespace PolyBrick.Params
                 minorFactor = (stresses[1] - MinStress) / (MaxStress - MinStress);
             }
             int orientationIndex = indices[2];
-            Plane rotationPlane = new Plane(Plane.WorldXY);
-            rotationPlane.Rotate(tensor.Rotation_XY, rotationPlane.XAxis);
-            rotationPlane.Rotate(tensor.Rotation_YZ, rotationPlane.YAxis);
-            rotationPlane.Rotate(tensor.Rotation_ZX, rotationPlane.ZAxis);
             switch (orientationIndex) //Check if the two corrdinate system is the same.
             {
                 case 0:
-                    orientation = rotationPlane.YAxis;
+                    orientation = tensor.plane.XAxis;
                     break;
                 case 1:
-                    orientation = rotationPlane.ZAxis;
+                    orientation = tensor.plane.YAxis;
                     break;
                 case 2:
-                    orientation = rotationPlane.XAxis;
+                    orientation = tensor.plane.ZAxis;
                     break;
                 default:
                     throw new Exception("Cannot find orientation.");

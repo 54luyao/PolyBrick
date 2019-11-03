@@ -15,7 +15,7 @@ namespace PolyBrick.EllipsoidPacking
         public ConstructTensorFieldComponent()
           : base("Construct Tensor Field", "ConstructTF",
               "Construct Tensor Field from planes.",
-              "PolyBrick", "TensorField")
+              "PolyBrick", "Tensor Field")
         {
         }
 
@@ -58,6 +58,8 @@ namespace PolyBrick.EllipsoidPacking
             else if (ys.Count != planes.Count) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Y lengths list is not equal to plane list."); }
             if (zs.Count == 1) { zs = Enumerable.Repeat(zs[0], planes.Count).ToList(); }
             else if (zs.Count != planes.Count) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Z lengths list is not equal to plane list."); }
+            TensorField tensorField = new TensorField(planes,xs,ys,zs);
+            DA.SetData(0, new TensorFieldGoo(tensorField));
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace PolyBrick.EllipsoidPacking
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Resource1.PolyBrickIcons_52;
             }
         }
 
