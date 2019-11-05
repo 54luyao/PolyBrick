@@ -95,7 +95,12 @@ namespace PolyBrick.Params
             {
                 Tensor tensor = new Tensor(planes[i], xs[i], ys[i], zs[i]);
                 Tensors.Add(tensor);
-                Nodes.Add(tensor.plane.Origin);
+                //Nodes.Add(tensor.plane.Origin);
+            }
+            Tensors.OrderBy(i => i.Magnitude_X + i.Magnitude_Y + i.Magnitude_Z);
+            for (int i = 0; i < Tensors.Count; i++)
+            {
+                Nodes.Add(Tensors[i].plane.Origin);
             }
             List<double> stresses = new List<double>();
             stresses.AddRange(xs.Select(x=>Math.Abs(x)).ToList());
@@ -111,7 +116,7 @@ namespace PolyBrick.Params
             Tensors = new List<Tensor>();
             MaxStress = Double.MinValue;
             MinStress = Double.MaxValue;
-            List<Point3d> tensorLocations = new List<Point3d>();
+            //List<Point3d> tensorLocations = new List<Point3d>();
             TextFieldParser parser = new TextFieldParser(path);
             parser.TextFieldType = FieldType.Delimited;
             parser.SetDelimiters(",");
@@ -126,7 +131,7 @@ namespace PolyBrick.Params
                 tensor.plane.OriginX = Double.Parse(fields[3], NumberStyles.Float);
                 tensor.plane.OriginY = Double.Parse(fields[1], NumberStyles.Float);
                 tensor.plane.OriginZ = Double.Parse(fields[2], NumberStyles.Float);
-                tensorLocations.Add(tensor.plane.Origin);
+                //tensorLocations.Add(tensor.plane.Origin);
                 tensor.Magnitude_X = Double.Parse(fields[6], NumberStyles.Float);
                 MaxStress = Math.Max(MaxStress, Math.Abs(tensor.Magnitude_X));
                 MinStress = Math.Min(MinStress, Math.Abs(tensor.Magnitude_X));
@@ -138,7 +143,11 @@ namespace PolyBrick.Params
                 MinStress = Math.Min(MinStress, Math.Abs(tensor.Magnitude_Z));
                 Tensors.Add(tensor);
             }
-            Nodes = new Point3dList(tensorLocations);
+            Tensors.OrderBy(i => i.Magnitude_X + i.Magnitude_Y + i.Magnitude_Z);
+            for (int i = 0; i < Tensors.Count; i++)
+            {
+                Nodes.Add(Tensors[i].plane.Origin);
+            }
         }
 
         public TensorField(TensorField tensorField)
@@ -157,7 +166,7 @@ namespace PolyBrick.Params
         public void GetOrientation(Point3d testPoint, ref Vector3d orientation, ref double majorFactor, ref double minorFactor)
         {
             //TODO:
-            int closestIndex = GetClosestIndex(testPoint);
+            int closestIndex = Nodes.ClosestIndex(testPoint);
             Tensor tensor = Tensors[closestIndex];
             double[] stresses = new double[] { Math.Abs(tensor.Magnitude_X), Math.Abs(tensor.Magnitude_Y), Math.Abs(tensor.Magnitude_Z) };
             int[] indices = new int[] { 0, 1, 2 };

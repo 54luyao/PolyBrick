@@ -26,7 +26,7 @@ namespace PolyBrick.EllipsoidPacking
             {
                 for (int i = 0; i < EGlobals.EXISTING_POINTS.Count; i++)
                 {
-                    Ellipsoid existingEllipsoid = new Ellipsoid(EGlobals.EXISTING_POINTS[i], EGlobals.MIN_RADIUS);
+                    Ellipsoid existingEllipsoid = new Ellipsoid(EGlobals.EXISTING_POINTS[i]);
                     existingEllipsoid.CheckBorder();
                     this.ellipsoids.Add(existingEllipsoid);
                 }

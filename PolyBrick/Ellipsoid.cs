@@ -51,7 +51,7 @@ namespace PolyBrick.EllipsoidPacking
             //bBox = new BoundingBox(- radiusA, - radiusB, - radiusC,  radiusA,  radiusB,  radiusC);
         }
 
-        public Ellipsoid(Point3d point, double r)
+        public Ellipsoid(Point3d point)
         {
             position = new Vector3d(point);
             acceleration = new Vector3d(0, 0, 0);
@@ -86,6 +86,11 @@ namespace PolyBrick.EllipsoidPacking
 
         public static Ellipsoid RandomEllipsoid()
         {
+            if (rand.NextDouble() < 0.7)
+            {
+                Point3d point = EGlobals.TENSORFIELDGOO.Value.Tensors[(int)Math.Floor(Math.Sqrt(rand.NextDouble()) * (EGlobals.TENSORFIELDGOO.Value.Tensors.Count - 1))].plane.Origin;
+                if (EGlobals.BOUNDARY.IsPointInside(point, RhinoMath.SqrtEpsilon, true)) return new Ellipsoid(point);
+            }
             double x;
             double y;
             double z;
@@ -136,7 +141,7 @@ namespace PolyBrick.EllipsoidPacking
                                 double rMin = EGlobals.MAX_RADIUS - maxFactor * (EGlobals.MAX_RADIUS - EGlobals.MIN_RADIUS);
                                 if (rMin + pack.ellipsoids[nearIndex].radiusA < samplePoint.DistanceTo(nearest))
                                 {
-                                    return new Ellipsoid(samplePoint, rMin);
+                                    return new Ellipsoid(samplePoint);
                                 }
                             }
                         }
@@ -258,9 +263,9 @@ namespace PolyBrick.EllipsoidPacking
             Value = new Ellipsoid(x, y, z);
         }
 
-        public EllipsoidGoo(Point3d point, double r)
+        public EllipsoidGoo(Point3d point)
         {
-            Value = new Ellipsoid( point,  r);
+            Value = new Ellipsoid( point);
         }
 
         public EllipsoidGoo(Ellipsoid e)

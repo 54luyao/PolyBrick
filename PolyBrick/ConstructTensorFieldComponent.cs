@@ -45,7 +45,7 @@ namespace PolyBrick.EllipsoidPacking
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Plane> planes = new List<Plane>();
-            DA.GetDataList(0, planes);
+            if (!DA.GetDataList(0, planes)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Failed to get planes."); return; }
             List<double> xs = new List<double>();
             DA.GetDataList(1, xs);
             List<double> ys = new List<double>();

@@ -16,7 +16,7 @@ namespace PolyBrick.EllipsoidPacking
         public static int Initial_Number;
         public static double MAX_RADIUS;
         public static double MIN_RADIUS;
-        public static Brep BOUNDARY;
+        public static Mesh BOUNDARY;
         //public static Point3d INIT_POINT;
         //public static double initX;
         //public static double initY;
