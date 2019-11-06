@@ -88,8 +88,11 @@ namespace PolyBrick.EllipsoidPacking
         {
             if (rand.NextDouble() < 0.7)
             {
-                Point3d point = EGlobals.TENSORFIELDGOO.Value.Tensors[(int)Math.Floor(Math.Sqrt(rand.NextDouble()) * (EGlobals.TENSORFIELDGOO.Value.Tensors.Count - 1))].plane.Origin;
-                if (EGlobals.BOUNDARY.IsPointInside(point, RhinoMath.SqrtEpsilon, true)) return new Ellipsoid(point);
+                if (EGlobals.HAS_TENSORFIELD)
+                {
+                    Point3d point = EGlobals.TENSORFIELDGOO.Value.Tensors[(int)Math.Floor(Math.Sqrt(rand.NextDouble()) * (EGlobals.TENSORFIELDGOO.Value.Tensors.Count - 1))].plane.Origin;
+                    if (EGlobals.BOUNDARY.IsPointInside(point, RhinoMath.SqrtEpsilon, true)) return new Ellipsoid(point);
+                }
             }
             double x;
             double y;
