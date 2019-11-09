@@ -43,21 +43,21 @@ namespace PolyBrick.EllipsoidPacking
         //    return cells[x, y, z];
         //}
 
-        public void Allocate(Ellipsoid circle)
+        public void Allocate(Ellipsoid e)
         {
             //int x = (int)Math.Floor((circle.position.X -Globals.BOUND_X_MIN)/ cell_size);
             //int y = (int)Math.Floor((circle.position.Y - Globals.BOUND_Y_MIN) / cell_size);
             //int z = (int)Math.Floor((circle.position.Z - Globals.BOUND_Z_MIN) / cell_size);
-            int pos_x = (int)Math.Floor((circle.position.X - EGlobals.BOUND_X_MIN) / cell_size);
+            int pos_x = (int)Math.Floor((e.position.X - EGlobals.BOUND_X_MIN) / cell_size);
             if (pos_x >= x_count) pos_x = x_count - 1;
             if (pos_x < 0) pos_x = 0;
-            int pos_y = (int)Math.Floor((circle.position.Y - EGlobals.BOUND_Y_MIN) / cell_size);
+            int pos_y = (int)Math.Floor((e.position.Y - EGlobals.BOUND_Y_MIN) / cell_size);
             if (pos_y >= x_count) pos_y = y_count - 1;
             if (pos_y < 0) pos_y = 0;
-            int pos_z = (int)Math.Floor((circle.position.Z - EGlobals.BOUND_Z_MIN) / cell_size);
+            int pos_z = (int)Math.Floor((e.position.Z - EGlobals.BOUND_Z_MIN) / cell_size);
             if (pos_z >= z_count) pos_z = z_count - 1;
             if (pos_z < 0) pos_z = 0;
-            cells[pos_x, pos_y, pos_z].AddLast(circle);
+            cells[pos_x, pos_y, pos_z].AddLast(e);
 
 
             //circle_index.Add(circle, i);
