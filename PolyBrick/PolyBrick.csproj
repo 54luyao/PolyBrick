@@ -43,14 +43,32 @@
       <HintPath>..\..\..\..\..\..\..\Program Files\Rhino 6\Plug-ins\Grasshopper\Grasshopper.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.4.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\..\SharpFE\SharpFE.Core\bin\Debug\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="MillipedeShared, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\MillipedeShared.dll</HintPath>
+    </Reference>
     <Reference Include="RhinoCommon">
       <HintPath>..\..\..\..\..\..\..\Program Files\Rhino 6\System\RhinoCommon.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Sawapansolversnet, Version=1.0.5149.42693, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\Sawapansolversnet.dll</HintPath>
+    </Reference>
+    <Reference Include="SawapanStatica, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\SawapanStatica.dll</HintPath>
+    </Reference>
+    <Reference Include="SawapanStatRhino, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\SawapanStatRhino.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpFE.Core">
+      <HintPath>..\..\SharpFE\SharpFE.Core\bin\Debug\SharpFE.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,20 +87,20 @@
     <Compile Include="ConstructTensorFieldComponent.cs" />
     <Compile Include="EGlobals.cs" />
     <Compile Include="Ellipsoid.cs" />
-    <Compile Include="EllipsoidPackingComponent.cs" />
     <Compile Include="EllipsoidPackingLiveComponent.cs" />
     <Compile Include="EllipsoidToMeshComponent.cs" />
+    <Compile Include="FEA\TestPanFEAComponent.cs" />
+    <Compile Include="FEA\testSharpFE.cs" />
     <Compile Include="GlobalRandom.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Grid.cs" />
-    <Compile Include="KissingSpheresComponent.cs" />
     <Compile Include="KissingEllipsoidsComponent.cs" />
+    <Compile Include="MoveTensorField.cs" />
     <Compile Include="Pack.cs" />
     <Compile Include="PackEllipsoid.cs" />
     <Compile Include="PackEllipsoid_NoSpatialPartioning.cs" />
     <Compile Include="Analysis\TempEvaluateTensorField.cs" />
     <Compile Include="Params\Tensor_Field.cs" />
-    <Compile Include="SpherePackingComponent.cs" />
     <Compile Include="PolyBrickInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource1.Designer.cs">
@@ -90,6 +108,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
+    <Compile Include="StressCurveComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource1.resx">
@@ -151,6 +170,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PolyBrickIcons-52.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-53.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons-54.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PolyBrickIcons_55.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\PolyBrickIcons-55.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

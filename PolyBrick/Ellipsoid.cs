@@ -210,7 +210,7 @@ namespace PolyBrick.EllipsoidPacking
             velocity = new Vector3d(0, 0, 0);
         }
 
-        /**Returns the summation of radi base on location of the two ellipsoids.*/
+        /**Returns the summation of rim distances.*/
         public double GetRimDistance(Ellipsoid other)
         {
             //TODO:
@@ -311,7 +311,7 @@ namespace PolyBrick.EllipsoidPacking
         public override string TypeDescription => "Contains a collection of ellipsoids.";
     }
 
-    public class EllipsoidParameter : GH_Param<EllipsoidGoo>
+    public class EllipsoidParameter : GH_PersistentParam<EllipsoidGoo>
     {
         public EllipsoidParameter()
             : base(new GH_InstanceDescription("Ellipsoid", "E", "Contains a collection of ellipsoids.", "PolyBrick", "Parameters"))
@@ -327,7 +327,15 @@ namespace PolyBrick.EllipsoidPacking
         {
             get { return new Guid("030f7391-d2ec-46f1-9728-5ba6b19ee414"); }
         }
+        protected override GH_GetterResult Prompt_Plural(ref List<EllipsoidGoo> values)
+        {
+            return GH_GetterResult.cancel;
+        }
 
+        protected override GH_GetterResult Prompt_Singular(ref EllipsoidGoo value)
+        {
+            return GH_GetterResult.cancel;
+        }
     }
 
     

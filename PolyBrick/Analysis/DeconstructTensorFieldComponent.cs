@@ -25,7 +25,7 @@ namespace PolyBrick.Params
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddParameter(new TensorFieldParameter(), "TensorField", "TF", "Optional Tensor Field for packing control.", GH_ParamAccess.item);
+            pManager.AddParameter(new TensorFieldParameter(), "TensorField", "TF", "Tensor field to deconstruct.", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -33,10 +33,10 @@ namespace PolyBrick.Params
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_PointParam("Point", "P", "Nodes in the tensor field.", GH_ParamAccess.list);
-            pManager.Register_VectorParam("MaxPrincipleStress", "MaxPS", "Maximum principle stresses.", GH_ParamAccess.list);
-            pManager.Register_VectorParam("MidPrincipleStress", "MidPS", "Middle principle stresses.", GH_ParamAccess.list);
-            pManager.Register_VectorParam("MinPrincipleStress", "MinPS", "Minimum principle stresses.", GH_ParamAccess.list);
+            pManager.Register_PlaneParam("Plane", "P", "Nodes in the tensor field.", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("MaxPrincipleStress", "MaxPS", "Maximum principle stresses.", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("MidPrincipleStress", "MidPS", "Middle principle stresses.", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("MinPrincipleStress", "MinPS", "Minimum principle stresses.", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -49,18 +49,18 @@ namespace PolyBrick.Params
             if (!DA.GetData(0, ref tensorFieldGoo)) { return; }
             TensorField tensorField = tensorFieldGoo.Value;
             int count = tensorField.Nodes.Count;
-            List<Point3d> locations = new List<Point3d>();
-            List<Vector3d> maxS = new List<Vector3d>();
-            List<Vector3d> midS = new List<Vector3d>();
-            List<Vector3d> minS = new List<Vector3d>();
+            List<Plane> locations = new List<Plane>();
+            List<double> maxS = new List<double>();
+            List<double> midS = new List<double>();
+            List<double> minS = new List<double>();
             //DA.SetDataList(0, tensorField.Nodes);
             for (int i =0;i <count; i++)
             {
                 Tensor tensor = tensorField.Tensors[i];
-                locations.Add(tensor.plane.Origin);
-                maxS.Add(tensor.Magnitude_X * tensor.plane.XAxis);
-                midS.Add(tensor.Magnitude_Y * tensor.plane.YAxis);
-                minS.Add(tensor.Magnitude_Z * tensor.plane.ZAxis);
+                locations.Add(tensor.plane);
+                maxS.Add(tensor.Magnitude_X);
+                midS.Add(tensor.Magnitude_Y);
+                minS.Add(tensor.Magnitude_Z);
             }
             //Point3d[] points= new Point3d[count];
             //tensorField.Nodes.CopyTo(points);

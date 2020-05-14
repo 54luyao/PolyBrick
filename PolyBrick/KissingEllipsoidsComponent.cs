@@ -51,12 +51,12 @@ namespace PolyBrick.EllipsoidPacking
             List<EllipsoidGoo> ellipsoidGoos = new List<EllipsoidGoo>();
             if (!DA.GetDataList(0, ellipsoidGoos)) { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid ellipsoid list."); return; }
             List<Ellipsoid> ellipsoids = new List<Ellipsoid>();
-            double maxR = Double.MinValue;
+            //double maxR = Double.MinValue;
             for (int i = 0; i < ellipsoidGoos.Count; i++)
             {
                 Ellipsoid e = ellipsoidGoos[i].Value;
                 ellipsoids.Add(e);
-                maxR = Math.Max(Math.Max(Math.Max(maxR, e.radiusC), e.radiusB), e.radiusA);
+                //maxR = Math.Max(Math.Max(Math.Max(maxR, e.radiusC), e.radiusB), e.radiusA);
                 centroids.Add(new Point3d(e.position));
             }
             double min_tolerance = 0;
@@ -64,68 +64,83 @@ namespace PolyBrick.EllipsoidPacking
             double max_tolerance = 0;
             DA.GetData(2, ref max_tolerance);
 
-            BoundingBox bBox = new BoundingBox(centroids);
-            Point3d min_corner = bBox.Min;
-            Point3d max_corner = bBox.Max;
+            //BoundingBox bBox = new BoundingBox(centroids);
+            //Point3d min_corner = bBox.Min;
+            //Point3d max_corner = bBox.Max;
 
-            double cell_size = maxR * 2 * 1.01;
-            int xCount = (int)Math.Ceiling((max_corner.X - min_corner.X) / cell_size);
-            int yCount = (int)Math.Ceiling((max_corner.Y - min_corner.Y) / cell_size);
-            int zCount = (int)Math.Ceiling((max_corner.Z - min_corner.Z) / cell_size);
+            //double cell_size = maxR * 2 * 1.01;
+            //int xCount = (int)Math.Ceiling((max_corner.X - min_corner.X) / cell_size);
+            //int yCount = (int)Math.Ceiling((max_corner.Y - min_corner.Y) / cell_size);
+            //int zCount = (int)Math.Ceiling((max_corner.Z - min_corner.Z) / cell_size);
 
-            Grid grid = new Grid(xCount, yCount, zCount, maxR);
+            //Grid grid = new Grid(xCount, yCount, zCount, maxR);
 
-            for (int i = 0; i < ellipsoids.Count; i++)
-            {
-                grid.Allocate(ellipsoids[i]);
-            }
+            //for (int i = 0; i < ellipsoids.Count; i++)
+            //{
+            //    grid.Allocate(ellipsoids[i]);
+            //}
 
             bool kissing;
-            for (int x = 0; x < grid.x_count; x++)
-            {
-                for (int y = 0; y < grid.y_count; y++)
-                {
-                    for (int z = 0; z < grid.z_count; z++)
-                    {
-                        LinkedList<Ellipsoid> cell = grid.cells[x, y, z];
-                        if (cell.Count != 0)
-                        {
-                            Ellipsoid[] cell_array = new Ellipsoid[cell.Count];
-                            cell.CopyTo(cell_array, 0);
-                            List<Ellipsoid> neighbors = grid.GetNeighborCellEllipsoids(x, y, z);
-                            for (int i = 0; i < cell.Count; i++)
-                            {
-                                Ellipsoid ellipsoid_i = cell_array[i];
-                                double d;
-                                double rimDistance;
-                                for (int j = i + 1; j < cell.Count; j++)
-                                {
-                                    Ellipsoid ellipsoid_j = cell_array[j];
-                                    d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_j.position));
-                                    rimDistance = ellipsoid_i.GetRimDistance(ellipsoid_j);
-                                    kissing = d <= rimDistance * max_tolerance && d >= rimDistance * min_tolerance;
-                                    if (kissing)
-                                    {
-                                        lattice.Add(new Line(new Point3d(ellipsoid_i.position), new Point3d(ellipsoid_j.position)));
-                                    }
+            //for (int x = 0; x < grid.x_count; x++)
+            //{
+            //    for (int y = 0; y < grid.y_count; y++)
+            //    {
+            //        for (int z = 0; z < grid.z_count; z++)
+            //        {
+            //            LinkedList<Ellipsoid> cell = grid.cells[x, y, z];
+            //            if (cell.Count != 0)
+            //            {
+            //                Ellipsoid[] cell_array = new Ellipsoid[cell.Count];
+            //                cell.CopyTo(cell_array, 0);
+            //                List<Ellipsoid> neighbors = grid.GetNeighborCellEllipsoids(x, y, z);
+            //                for (int i = 0; i < cell.Count; i++)
+            //                {
+            //                    Ellipsoid ellipsoid_i = cell_array[i];
+            //                    double d;
+            //                    double rimDistance;
+            //                    for (int j = i + 1; j < cell.Count; j++)
+            //                    {
+            //                        Ellipsoid ellipsoid_j = cell_array[j];
+            //                        d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_j.position));
+            //                        rimDistance = ellipsoid_i.GetRimDistance(ellipsoid_j);
+            //                        kissing = d <= rimDistance * max_tolerance && d >= rimDistance * min_tolerance;
+            //                        if (kissing)
+            //                        {
+            //                            lattice.Add(new Line(new Point3d(ellipsoid_i.position), new Point3d(ellipsoid_j.position)));
+            //                        }
 
-                                }
-                                for (int k = 0; k < neighbors.Count; k++)
-                                {
-                                    Ellipsoid ellipsoid_k = neighbors[k];
-                                    if (ellipsoid_i.moved || ellipsoid_k.moved)
-                                    {
-                                        d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_k.position));
-                                        rimDistance = ellipsoid_i.GetRimDistance(ellipsoid_k);
-                                        kissing = d <= rimDistance * max_tolerance && d >= rimDistance * min_tolerance;
-                                        if (kissing)
-                                        {
-                                            lattice.Add(new Line(new Point3d(ellipsoid_i.position), new Point3d(ellipsoid_k.position)));
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            //                    }
+            //                    for (int k = 0; k < neighbors.Count; k++)
+            //                    {
+            //                        Ellipsoid ellipsoid_k = neighbors[k];
+            //                        if (ellipsoid_i.moved || ellipsoid_k.moved)
+            //                        {
+            //                            d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_k.position));
+            //                            rimDistance = ellipsoid_i.GetRimDistance(ellipsoid_k);
+            //                            kissing = d <= rimDistance * max_tolerance && d >= rimDistance * min_tolerance;
+            //                            if (kissing)
+            //                            {
+            //                                lattice.Add(new Line(new Point3d(ellipsoid_i.position), new Point3d(ellipsoid_k.position)));
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            for (int i = 0; i < ellipsoids.Count; i++)
+            {
+                Ellipsoid ellipsoid_i = ellipsoids[i];
+                for (int j = i + 1; j < ellipsoids.Count; j++)
+                {
+                    Ellipsoid ellipsoid_j = ellipsoids[j];
+                    double d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_j.position));
+                    double rimDistance = ellipsoid_i.GetRimDistance(ellipsoid_j);
+                    kissing = d <= rimDistance * max_tolerance && d >= rimDistance * min_tolerance;
+                    if (kissing)
+                    {
+                        lattice.Add(new Line(new Point3d(ellipsoid_i.position), new Point3d(ellipsoid_j.position)));
                     }
                 }
             }

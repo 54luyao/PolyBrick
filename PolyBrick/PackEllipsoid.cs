@@ -13,27 +13,38 @@ namespace PolyBrick.EllipsoidPacking
         public int? collisions;
         public List<Ellipsoid> ellipsoids = new List<Ellipsoid>();
         public List<int> collision_index;
+        List<Point3d> existingPoints;
 
-        public PackEllipsoid(int number)
+        public PackEllipsoid(int number, List<Point3d> existingPoints)
         {
-            this.Initiate(number);
+            this.Initiate(number, existingPoints);
             this.collisions = null;
+            this.existingPoints = existingPoints;
         }
 
-        public void Initiate(int number)
+        public void Initiate(int number, List<Point3d> existingPoints)
         {
-            if (EGlobals.EXISTING_POINTS.Count != 0)
+            if (existingPoints.Count != 0)
             {
-                for (int i = 0; i < EGlobals.EXISTING_POINTS.Count; i++)
+                for (int i = 0; i < existingPoints.Count; i++)
                 {
-                    Ellipsoid existingEllipsoid = new Ellipsoid(EGlobals.EXISTING_POINTS[i]);
+                    Ellipsoid existingEllipsoid = new Ellipsoid(existingPoints[i]);
                     existingEllipsoid.CheckBorder();
+                    if (EGlobals.HAS_TENSORFIELD)
+                    {
+                        existingEllipsoid.UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+                    }
                     this.ellipsoids.Add(existingEllipsoid);
                 }
             }
             for (int i = 0; i < number; i++)
             {
-                this.ellipsoids.Add(Ellipsoid.RandomEllipsoid());
+                Ellipsoid newEllipsoid = Ellipsoid.RandomEllipsoid();
+                if (EGlobals.HAS_TENSORFIELD)
+                {
+                    newEllipsoid.UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+                }
+                this.ellipsoids.Add(newEllipsoid);
             }
         }
 
@@ -87,7 +98,7 @@ namespace PolyBrick.EllipsoidPacking
                          for (int z = 0; z < grid.z_count; z++)
                          {
                              //List<Ellipsoid> cell = grid.cells[gridIndices[3 * x], gridIndices[3 * x + 1], gridIndices[3 * x + 2]];
-                             LinkedList<Ellipsoid> cell = grid.cells[x,y, z];
+                             LinkedList<Ellipsoid> cell = grid.cells[x, y, z];
                              if (cell.Count != 0)
                              {
                                  Ellipsoid[] cell_array = new Ellipsoid[cell.Count];
@@ -103,6 +114,8 @@ namespace PolyBrick.EllipsoidPacking
                                      for (int j = i + 1; j < cell.Count; j++)
                                      {
                                          Ellipsoid ellipsoid_j = cell_array[j];
+                                         int index_j = grid.ellipsoid_index[ellipsoid_j];
+                                         if (index_i < existingPoints.Count && index_j < existingPoints.Count) continue;
                                          if (ellipsoid_i.moved || ellipsoid_j.moved)
                                          {
                                              d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_j.position));
@@ -110,7 +123,6 @@ namespace PolyBrick.EllipsoidPacking
                                              if (d < rimDistance * 0.95)
                                              //if (Ellipsoid.BroadPhaseCollision(ellipsoid_i,ellipsoid_j))
                                              {
-                                                 int index_j = grid.ellipsoid_index[ellipsoid_j];
                                                  ApplySeparationForcesToEllipsoid(ellipsoid_i, ellipsoid_j, separate_forces, near_ellipsoids, index_i, index_j, rimDistance, d);
                                                  //collision_index.Add(index_i); //Debug
                                                  //collision_index.Add(index_j); //Debug 
@@ -120,6 +132,8 @@ namespace PolyBrick.EllipsoidPacking
                                      for (int k = 0; k < neighbors.Count; k++)
                                      {
                                          Ellipsoid ellipsoid_k = neighbors[k];
+                                         int index_k = grid.ellipsoid_index[ellipsoid_k];
+                                         if (index_i < existingPoints.Count && index_k < existingPoints.Count) continue;
                                          if (ellipsoid_i.moved || ellipsoid_k.moved)
                                          {
                                              d = new Point3d(ellipsoid_i.position).DistanceTo(new Point3d(ellipsoid_k.position));
@@ -127,7 +141,6 @@ namespace PolyBrick.EllipsoidPacking
                                              if (d < rimDistance * 0.95)
                                              //if (Ellipsoid.BroadPhaseCollision(ellipsoid_i,ellipsoid_k))
                                              {
-                                                 int index_k = grid.ellipsoid_index[ellipsoid_k];
                                                  ApplySeparationForcesToEllipsoid(ellipsoid_i, ellipsoid_k, separate_forces, near_ellipsoids, index_i, index_k, rimDistance, d);
                                                  //collision_index.Add(index_i); //Debug
                                                  //collision_index.Add(index_k); //Debug 
@@ -143,13 +156,13 @@ namespace PolyBrick.EllipsoidPacking
             if (result.IsCompleted)
             {
                 //ParallelLoopResult result2 = Parallel.For(EGlobals.EXISTING_POINTS.Count, ellipsoids.Count, i =>
-                for (int i = EGlobals.EXISTING_POINTS.Count;i< ellipsoids.Count;i++)
-                 {
-                     Ellipsoid ei = ellipsoids[i];
-                     LinkedList<Ellipsoid> prev_list = grid.GetOneCell(ei);
-                     prev_list.Remove(ei);
-                     double length = separate_forces[i].Length;
-                     if (length > 0) //Need this to control step size??
+                for (int i = this.existingPoints.Count; i < ellipsoids.Count; i++)
+                {
+                    Ellipsoid ei = ellipsoids[i];
+                    LinkedList<Ellipsoid> prev_list = grid.GetOneCell(ei);
+                    prev_list.Remove(ei);
+                    double length = separate_forces[i].Length;
+                    if (length > 0) //Need this to control step size??
                     {
                         //separate_forces[i] = separate_forces[i] * Globals.MAX_SPEED / length; //Force option 1
                         separate_forces[i] = separate_forces[i] / near_ellipsoids[i]; //Force option 2
@@ -164,19 +177,34 @@ namespace PolyBrick.EllipsoidPacking
                     {
                         ei.moved = false;
                     }
-                     CheckBorders(i);
-                     if (EGlobals.HAS_TENSORFIELD)
-                     {
-                         ei.UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
-                     }
-                     else
-                     {
-                         ei.radiusA = EGlobals.MIN_RADIUS;
-                         ei.radiusB = EGlobals.MIN_RADIUS;
-                         ei.radiusC = EGlobals.MAX_RADIUS;
-                     }
-                     grid.Allocate(ei);
-                 }//);
+                    CheckBorders(i);
+                    if (EGlobals.HAS_TENSORFIELD)
+                    {
+                        ei.UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+                    }
+                    else
+                    {
+                        ei.radiusA = EGlobals.MIN_RADIUS;
+                        ei.radiusB = EGlobals.MIN_RADIUS;
+                        ei.radiusC = EGlobals.MAX_RADIUS;
+                    }
+                    grid.Allocate(ei);
+                }//);
+
+                for (int i = 0; i < existingPoints.Count; i++)
+                {
+                    Ellipsoid ei = ellipsoids[i];
+                    if (EGlobals.HAS_TENSORFIELD)
+                    {
+                        ei.UpdateSizeOrientation(EGlobals.TENSORFIELDGOO.Value);
+                    }
+                    else
+                    {
+                        ei.radiusA = EGlobals.MIN_RADIUS;
+                        ei.radiusB = EGlobals.MIN_RADIUS;
+                        ei.radiusC = EGlobals.MAX_RADIUS;
+                    }
+                }
 
                 //if (result2.IsCompleted)
                 {
@@ -187,7 +215,7 @@ namespace PolyBrick.EllipsoidPacking
                 }
             }
 
-            
+
         }
 
         public void CheckBorders(int i)
@@ -201,7 +229,7 @@ namespace PolyBrick.EllipsoidPacking
                 ellipsoid_i.position = new Vector3d(closestPoint);
                 if (GlobalRandom.rand.NextDouble() < 0.02)
                 {
-                    ellipsoid_i.velocity = GlobalRandom.RandomVector();
+                    ellipsoid_i.velocity += GlobalRandom.RandomVector();
                 }
                 ellipsoid_i.moved = true;
             }

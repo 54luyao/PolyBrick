@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using PolyBrick.Params;
+using Rhino;
 
 
 namespace PolyBrick.EllipsoidPacking
@@ -14,7 +15,7 @@ namespace PolyBrick.EllipsoidPacking
         /// Initializes a new instance of the EllipsoidPackingLiveComponent class.
         /// </summary>
         public EllipsoidPackingLiveComponent()
-          : base("Ellipsoid Packing Live", "Ellipsoid Packing Live",
+          : base("Ellipsoid Packing", "Ellipsoid Packing",
               "Pack ellipsoids in a Brep.",
               "PolyBrick", "Packing")
         {
@@ -79,6 +80,8 @@ namespace PolyBrick.EllipsoidPacking
             bool reset = false;
             if (!DA.GetData(8, ref reset)) return;
 
+            double boundaryCheckTolerance = 0.001;
+
             try
             {
                 EGlobals.BOUNDARY = (Mesh)boundary;
@@ -124,7 +127,7 @@ namespace PolyBrick.EllipsoidPacking
                 {
                     for (int index = 0; index < existingpoints.Count; index++)
                     {
-                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
+                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], boundaryCheckTolerance, false))
                         {
                             EXISTING_POINTS.Add(existingpoints[index]);
                         }
@@ -137,7 +140,7 @@ namespace PolyBrick.EllipsoidPacking
             if (new_pack == null)
             {
                 //Existing point issue not solved
-                new_pack = new PackEllipsoid(Initial_Number);
+                new_pack = new PackEllipsoid(Initial_Number,EXISTING_POINTS);
                 //Put each ellipsoid into corresponding voxel
                 for (int num = 0; num < new_pack.ellipsoids.Count; num++)
                 {
@@ -159,14 +162,14 @@ namespace PolyBrick.EllipsoidPacking
                 {
                     for (int index = 0; index < existingpoints.Count; index++)
                     {
-                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], EGlobals.MIN_RADIUS / 20.0, false))
+                        if (EGlobals.BOUNDARY.IsPointInside(existingpoints[index], boundaryCheckTolerance, false))
                         {
                             EXISTING_POINTS.Add(existingpoints[index]);
                         }
                     }
                 }
                 //Existing point issue not solved
-                new_pack = new PackEllipsoid(Initial_Number);
+                new_pack = new PackEllipsoid(Initial_Number, EXISTING_POINTS);
                 for (int num = 0; num < new_pack.ellipsoids.Count; num++)
                 {
                     Ellipsoid ellipsoid = new_pack.ellipsoids[num];

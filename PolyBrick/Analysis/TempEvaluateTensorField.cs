@@ -34,9 +34,10 @@ namespace PolyBrick.Params
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_VectorParam("Orienvation", "T", "Orientation of the major axis.", GH_ParamAccess.item);
-            pManager.Register_DoubleParam("MajorFactor", "MaxF", "Size factor of the major axis.", GH_ParamAccess.item);
-            pManager.Register_DoubleParam("MinorFactor", "MinF", "Size factor of the minor axis.", GH_ParamAccess.item);
+            pManager.Register_PlaneParam("Plane", "P", "Stress directions.", GH_ParamAccess.item);
+            pManager.Register_DoubleParam("MaxPrincipalStress", "MaxS", "MaxStressValue.", GH_ParamAccess.item);
+            pManager.Register_DoubleParam("MidPrincipalStress", "MidS", "MidStressValue.", GH_ParamAccess.item);
+            pManager.Register_DoubleParam("MinPrincipalStress", "MinS", "MinStressValue.", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -49,6 +50,14 @@ namespace PolyBrick.Params
             Point3d point = new Point3d();
             if (!DA.GetData(0, ref tensorFieldGoo)) return;
             if (!DA.GetData(1, ref point)) return;
+
+            Tensor t = tensorFieldGoo.Value.Interpolate(point);
+            DA.SetData(0, t.plane);
+            DA.SetData(1, t.Magnitude_X);
+            DA.SetData(2, t.Magnitude_Y);
+            DA.SetData(3, t.Magnitude_Z);
+
+            /*
             Vector3d orientation = new Vector3d(0,0,0);
             double majorFactor = 0;
             double minorFactor = 0;
@@ -56,6 +65,7 @@ namespace PolyBrick.Params
             DA.SetData(0, orientation);
             DA.SetData(1, majorFactor);
             DA.SetData(2, minorFactor);
+            */
         }
 
         /// <summary>
